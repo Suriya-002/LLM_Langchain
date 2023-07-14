@@ -3,6 +3,7 @@ from langchain.chat_models import ChatOpenAI
 from langchain.chains import LLMChain
 from dotenv import load_dotenv
 from third_parties.linkedin import scrape_linkedin_profile
+from agents.linkedin_lookup_agent import lookup as linkedin_lookup_agent
 
 load_dotenv()
 
@@ -14,8 +15,10 @@ Kane conceived Batman in early 1939 to capitalize on the popularity of DC's Supe
 DC has featured Batman in many comic books, including comics published under its imprints such as Vertigo and Black Label. The longest-running Batman comic, Detective Comics, is the longest-running comic book in the United States. Batman is frequently depicted alongside other DC superheroes, such as Superman and Wonder Woman, as a member of organizations such as the Justice League and the Outsiders. In addition to Bruce Wayne, other characters have taken on the Batman persona on different occasions, such as Jean-Paul Valley / Azrael in the 1993–1994 "Knightfall" story arc; Dick Grayson, the first Robin, from 2009 to 2011; and Jace Fox, son of Wayne's ally Lucius, as of 2021.[4] DC has also published comics featuring alternate versions of Batman, including the incarnation seen in The Dark Knight Returns and its successors, the incarnation from the Flashpoint (2011) event, and numerous interpretations from Elseworlds stories.
 """
 
-if __name__=="__main__":
+if __name__ == "__main__":
     print("Hello Langchain")
+
+    linkedin_profile_url = linkedin_lookup_agent(name = "Sukesh N D")
 
     summary_template = """
                given the information {information} about a person from I want to create:
@@ -23,15 +26,16 @@ if __name__=="__main__":
                2. two interesting faacts bout them
                """
 
-    summary_prompt_template = PromptTemplate(input_variables=['information'], template=summary_template)
-
+    summary_prompt_template = PromptTemplate(
+        input_variables=["information"], template=summary_template
+    )
 
     llm = ChatOpenAI(temperature=0, model="gpt-3.5-turbo")
 
     chain = LLMChain(llm=llm, prompt=summary_prompt_template)
 
-    linkedin_data = scrape_linkedin_profile(linkedin_profile_url="https://www.linkedin.com/in/sukesh-n-d-633865204/")
+    linkedin_data = scrape_linkedin_profile(
+        linkedin_profile_url=linkedin_profile_url
+    )
 
-    print(chain.run(information = linkedin_data))
-
-
+    print(chain.run(information=linkedin_data))
